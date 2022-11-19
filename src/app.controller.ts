@@ -1,9 +1,11 @@
-import { Controller, Get, Post, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Request, Req } from '@nestjs/common';
 import { AppService } from './app.service';
 
 import { AuthGuard } from '@nestjs/passport';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Public } from './decorators/public-decorator';
 
 @Controller()
 export class AppController {
@@ -18,8 +20,15 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
-  @Get()
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
+  @Public()
+  @Get('/hello')
   async helloWorld() {
-    return 'Hello World!';
+    return 'hello world';
   }
 }
