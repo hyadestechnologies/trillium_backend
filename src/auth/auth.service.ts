@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { signupUserType } from 'src/types/types';
@@ -29,7 +29,21 @@ export class AuthService {
   }
 
   async signup(user: signupUserType) {
-    const { password, ...newUser } = await this.usersService.createUser(user);
-    return newUser;
+    try {
+      const { password, ...newUserData } = await this.usersService.createUser(
+        user,
+      );
+      return newUserData;
+    } catch (e: any) {
+      console.log(e.meta.target);
+      if (e.meta.target === 'User_email_key') {
+        throw new HttpException('EMAIL_ALREADY_TAKEN', HttpStatus.BAD_REQUEST);
+      } else if (e.meta.target === 'User_username_key') {
+        throw new HttpException(
+          'USERNAME_ALREADY_TAKEN',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
   }
 }
