@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { signupUserType } from 'src/types/types';
+import { User, PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +15,7 @@ export class AuthService {
     const user = await this.usersService.findOne(username);
     if (user && user.password === password) {
       const { password, ...result } = user;
+
       return result;
     }
 
@@ -25,6 +27,7 @@ export class AuthService {
 
     return {
       access_token: this.jwtService.sign(payload),
+      user: user,
     };
   }
 
