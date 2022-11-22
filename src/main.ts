@@ -6,6 +6,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = Number(process.env.PORT);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Trillium')
     .setDescription('Trillium API description')
