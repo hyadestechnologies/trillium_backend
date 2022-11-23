@@ -18,8 +18,14 @@ export class AppController {
   }
 
   @Public()
-  @Get('/hello')
-  async helloWorld() {
-    return 'hello world';
+  @Get('/health-check')
+  async healthCheck() {
+    return { status: true };
+  }
+
+  @Public()
+  @Get('/')
+  async helloFromUs() {
+    return '<h1>Hello from the Hyades team</h1><p>Cristian Scapin, Matteo Brusarosco and Antonio Gelain</p>';
   }
 }
