@@ -40,12 +40,9 @@ export class AuthService {
     } catch (e: any) {
       console.log(e.meta.target);
       if (e.meta.target === 'User_email_key') {
-        throw new HttpException('EMAIL_ALREADY_TAKEN', HttpStatus.BAD_REQUEST);
+        throw new HttpException('EMAIL_ALREADY_TAKEN', HttpStatus.CONFLICT);
       } else if (e.meta.target === 'User_username_key') {
-        throw new HttpException(
-          'USERNAME_ALREADY_TAKEN',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException('USERNAME_ALREADY_TAKEN', HttpStatus.CONFLICT);
       }
     }
   }
