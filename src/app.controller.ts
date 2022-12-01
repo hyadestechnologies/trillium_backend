@@ -4,7 +4,7 @@ import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { Public } from './decorators/public-decorator';
 
-@Controller()
+@Controller({ version: '1' })
 export class AppController {
   constructor(
     private readonly appService: AppService,
