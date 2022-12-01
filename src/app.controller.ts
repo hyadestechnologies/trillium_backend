@@ -11,12 +11,6 @@ export class AppController {
     private authService: AuthService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @Public()
   @Get('/health-check')
   async healthCheck() {
