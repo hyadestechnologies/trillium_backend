@@ -36,4 +36,8 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
     return newUser;
   }
+
+  async sayHello() {
+    return "Hello!";
+  }
 }
