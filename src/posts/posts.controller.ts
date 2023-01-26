@@ -6,7 +6,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './posts.dto';
 
-@Controller()
+@Controller({path: 'posts', version: '1'})
 export class PostsController {
   constructor(private readonly service: PostsService) {}
 

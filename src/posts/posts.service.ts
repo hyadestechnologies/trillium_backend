@@ -11,9 +11,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         title: newPost.title,
         description: newPost.description,
         userId: newPost.userId,
-        likes: 0,
-        Shares: 0,
-        deletedOn: '0000-00-00 00:00:00',
+        deletedOn: null,
       },
     });
 
