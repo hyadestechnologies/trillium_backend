@@ -23,15 +23,15 @@ model User {
 }
 
 model Post {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
-  likes        Int
-  Shares       Int
-  creationDate DateTime @default(now())
-  lastUpdate   DateTime @updatedAt
-  deletedOn    DateTime
+  likes        Int?      @default(0)
+  shares       Int?      @default(0)
+  creationDate DateTime  @default(now())
+  lastUpdate   DateTime  @updatedAt
+  deletedOn    DateTime?
   userId       String
-  postMedia    String[]
-  postComments String[]
+  postMedia    String[]  @default([])
+  postComments String[]  @default([])
 }
