@@ -21,3 +21,15 @@ model User {
   creationDate DateTime @default(now())
   lastUpdate   DateTime @updatedAt
 }
+
+model Post {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String
+  likes        Int
+  Shares       Int
+  creationDate DateTime @default(now())
+  lastUpdate   DateTime @updatedAt
+  deletedOn    DateTime
+  userId       String
+}
