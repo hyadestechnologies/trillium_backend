@@ -18,6 +18,12 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     return post;
   }
 
+  public async getAllPosts(page: number, size: number) {
+    const posts = await this.post.findMany();
+
+    return posts;
+  }
+
   async onModuleInit() {
     await this.$connect();
   }
