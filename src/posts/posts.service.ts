@@ -1,4 +1,9 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  OnModuleInit,
+} from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { responseType } from 'src/types/types';
 
@@ -7,7 +12,6 @@ import { CreatePostDto, UpdatePostDto } from './posts.dto';
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
   public async createNewPost(newPost: CreatePostDto) {
-
     // todo: upload media
 
     const post = await this.post.create({
@@ -22,18 +26,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     return post;
   }
 
-  public async getAllPosts(page: number, size: number): Promise<responseType> {
+  public async getAllPosts(page: number, size: number) {
     const posts = await this.post.findMany();
 
-    return {
-      status: 200,
-      body: posts,
-    };
+    return posts;
   }
 
-  public async deletePost(postId: string): Promise<responseType> {
-    let response: responseType;
-
+  public async deletePost(postId: string) {
     try {
       const deletePost = await this.post.delete({
         where: {
@@ -41,29 +40,15 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         },
       });
 
-      response = {
-        status: 200,
-        message: 'Post deleted successfully',
-        body: deletePost,
-      };
+      return deletePost;
     } catch (exp) {
-      response = {
-        status: 404,
-        message: 'Post not found',
-      };
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-
-    return response;
   }
 
-  public async updatePost(
-    newPost: UpdatePostDto,
-    postId: string,
-  ): Promise<responseType> {
-    let response: responseType;
-
+  public async updatePost(newPost: UpdatePostDto, postId: string) {
     // todo: update media
-
+    console.log(newPost);
     try {
       const updatePost = await this.post.update({
         where: {
@@ -75,18 +60,11 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         },
       });
 
-      response = {
-        status: 200,
-        body: updatePost,
-      };
+      return updatePost;
     } catch (exp) {
-      response = {
-        status: 404,
-        message: 'Post not found',
-      };
+      console.log(exp);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
-
-    return response;
   }
 
   async onModuleInit() {

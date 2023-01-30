@@ -1,5 +1,13 @@
 import { Controller } from '@nestjs/common';
-import { Body, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common/decorators';
+import {
+  Body,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common/decorators';
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -35,7 +43,8 @@ export class PostsController {
   @Public()
   //@UseGuards(JwtAuthGuard)
   @Put('update/:id')
-  async updatePost(newPost: UpdatePostDto, @Param('id') postId) {
+  async updatePost(@Body() newPost: any, @Param('id') postId) {
+    console.log(newPost);
     return this.service.updatePost(newPost, postId);
   }
 }
