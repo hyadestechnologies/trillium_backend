@@ -1,5 +1,6 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Param, Put } from '@nestjs/common';
 import { PrismaClient, Post } from '@prisma/client';
+import { responseType } from 'src/types/types';
 
 import { CreatePostDto } from './posts.dto';
 
@@ -18,10 +19,70 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     return post;
   }
 
-  public async getAllPosts(page: number, size: number) {
+  public async getAllPosts(page: number, size: number): Promise<responseType> {
     const posts = await this.post.findMany();
 
-    return posts;
+    return {
+      status: 200,
+      body: posts,
+    };
+  }
+
+  public async deletePost(postId: string): Promise<responseType> {
+    let response: responseType;
+
+    try {
+      const deletePost = await this.post.delete({
+        where: {
+          id: postId,
+        },
+      });
+
+      response = {
+        status: 200,
+        message: 'Post deleted successfully',
+        body: deletePost,
+      };
+    } catch (exp) {
+      response = {
+        status: 404,
+        message: 'Post not found',
+      };
+    }
+
+    return response;
+  }
+
+  @Put('update/:id')
+  public async updatePost(
+    newPost: CreatePostDto,
+    @Param('id') postId,
+  ): Promise<responseType> {
+    let response: responseType;
+
+    try {
+      const updatePost = await this.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          title: newPost.title,
+          description: newPost.description,
+        },
+      });
+
+      response = {
+        status: 200,
+        body: updatePost,
+      };
+    } catch (exp) {
+      response = {
+        status: 404,
+        message: 'Post not found',
+      };
+    }
+
+    return response;
   }
 
   async onModuleInit() {
