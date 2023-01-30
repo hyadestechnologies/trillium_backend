@@ -1,10 +1,10 @@
 import { Controller } from '@nestjs/common';
-import { Body, Delete, Get, Param, Post, UseGuards } from '@nestjs/common/decorators';
+import { Body, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common/decorators';
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './posts.dto';
+import { CreatePostDto, UpdatePostDto } from './posts.dto';
 import { Public } from 'src/decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
@@ -30,5 +30,12 @@ export class PostsController {
   @Delete('delete/:id')
   async deletePost(@Param('id') postId) {
     return this.service.deletePost(postId);
+  }
+
+  @Public()
+  //@UseGuards(JwtAuthGuard)
+  @Put('update/:id')
+  async updatePost(newPost: UpdatePostDto, @Param('id') postId) {
+    return this.service.updatePost(newPost, postId);
   }
 }

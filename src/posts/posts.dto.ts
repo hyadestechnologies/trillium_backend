@@ -5,3 +5,9 @@ export interface CreatePostDto {
   postMedia: any[];
   postComments: any[];
 }
+
+export interface UpdatePostDto {
+  title: string;
+  description: string;
+  postMedia: any[];
+}

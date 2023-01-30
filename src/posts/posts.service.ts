@@ -1,12 +1,15 @@
-import { Injectable, OnModuleInit, Param, Put } from '@nestjs/common';
-import { PrismaClient, Post } from '@prisma/client';
+import { Injectable, OnModuleInit } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { responseType } from 'src/types/types';
 
-import { CreatePostDto } from './posts.dto';
+import { CreatePostDto, UpdatePostDto } from './posts.dto';
 
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
   public async createNewPost(newPost: CreatePostDto) {
+
+    // todo: upload media
+
     const post = await this.post.create({
       data: {
         title: newPost.title,
@@ -53,12 +56,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     return response;
   }
 
-  @Put('update/:id')
   public async updatePost(
-    newPost: CreatePostDto,
-    @Param('id') postId,
+    newPost: UpdatePostDto,
+    postId: string,
   ): Promise<responseType> {
     let response: responseType;
+
+    // todo: update media
 
     try {
       const updatePost = await this.post.update({
