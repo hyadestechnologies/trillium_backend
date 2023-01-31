@@ -24,16 +24,25 @@ model User {
 }
 
 model Post {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   title        String
   description  String
-  likes        Int?      @default(0)
-  shares       Int?      @default(0)
-  creationDate DateTime  @default(now())
-  lastUpdate   DateTime  @updatedAt
+  likes        Int?        @default(0)
+  shares       Int?        @default(0)
+  creationDate DateTime    @default(now())
+  lastUpdate   DateTime    @updatedAt
   deletedOn    DateTime?
-  user         User      @relation(fields: [userId], references: [id])
-  userId       String    @db.ObjectId
-  postMedia    String[]  @default([])
-  postComments String[]  @default([])
+  user         User        @relation(fields: [userId], references: [id])
+  userId       String      @db.ObjectId
+  postComments String[]    @default([])
+  PostMedia    PostMedia[]
+}
+
+model PostMedia {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  post   Post   @relation(fields: [postId], references: [id])
+  postId String @db.ObjectId
+  type   String
+  name   String
+  url    String
 }
