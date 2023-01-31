@@ -3,7 +3,6 @@ export interface CreatePostDto {
   description: string;
   userId: string;
   postMedia: any[];
-  postComments: any[];
 }
 
 export interface UpdatePostDto {

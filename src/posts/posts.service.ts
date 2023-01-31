@@ -5,14 +5,21 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { responseType } from 'src/types/types';
 
 import { CreatePostDto, UpdatePostDto } from './posts.dto';
 
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
   public async createNewPost(newPost: CreatePostDto) {
-    // todo: upload media
+    const mediaUrls = this.uploadMedia(newPost.postMedia);
+
+    // check if media upload was successful
+    if (mediaUrls.length > 0) {
+      throw new HttpException(
+        'Error while uploading files',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
 
     const post = await this.post.create({
       data: {
@@ -50,9 +57,18 @@ export class PostsService extends PrismaClient implements OnModuleInit {
   }
 
   public async updatePost(newPost: UpdatePostDto, postId: string) {
-    // todo: update media
-    console.log(newPost);
     try {
+      const mediaUrls = this.uploadMedia(newPost.postMedia);
+
+      // check if media upload was successful
+      if (mediaUrls.length > 0) {
+        throw new HttpException(
+          'Error while uploading files',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+
+      // if media are uploaded, add to db
       const updatePost = await this.post.update({
         where: {
           id: postId,
@@ -72,5 +88,19 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     await this.$connect();
+  }
+
+  private uploadMedia(postMedia: any[]): string[] {
+    // TODO: proper upload to s3
+
+    // manage media
+    let mediaUrls = [];
+    postMedia.forEach((media) => {
+      // upload media to s3
+      console.log(media);
+      mediaUrls = [];
+    });
+
+    return mediaUrls;
   }
 }
