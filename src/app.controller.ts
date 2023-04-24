@@ -12,7 +12,7 @@ export class AppController {
   ) {}
 
   @Public()
-  @Get('/health-check')
+  @Get('/healthcheck')
   async healthCheck() {
     return { status: true };
   }
