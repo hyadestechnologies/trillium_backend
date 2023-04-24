@@ -58,20 +58,10 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
   public async updatePost(newPost: UpdatePostDto, postId: string) {
     try {
-      const mediaUrls = this.uploadMedia(newPost.postMedia);
-
-      // check if media upload was successful
-      if (mediaUrls.length > 0) {
-        throw new HttpException(
-          'Error while uploading files',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
-
-      // if media are uploaded, add to db
-      const updatePost = await this.post.update({
+      const updatePost = await this.post.updateMany({
         where: {
           id: postId,
+          userId: newPost.userId,
         },
         data: {
           title: newPost.title,

@@ -9,4 +9,5 @@ export interface UpdatePostDto {
   title: string;
   description: string;
   postMedia: any[];
+  userId: string;
 }
