@@ -69,18 +69,4 @@ export class PostsService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
   }
-
-  private uploadMedia(postMedia: any[]): string[] {
-    // TODO: proper upload to s3
-
-    // manage media
-    let mediaUrls = [];
-    postMedia.forEach((media) => {
-      // upload media to s3
-      console.log(media);
-      mediaUrls = [];
-    });
-
-    return mediaUrls;
-  }
 }
