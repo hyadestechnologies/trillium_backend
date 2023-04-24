@@ -11,16 +11,6 @@ import { CreatePostDto, UpdatePostDto } from './posts.dto';
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
   public async createNewPost(newPost: CreatePostDto) {
-    const mediaUrls = this.uploadMedia(newPost.postMedia);
-
-    // check if media upload was successful
-    if (mediaUrls.length > 0) {
-      throw new HttpException(
-        'Error while uploading files',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-
     const post = await this.post.create({
       data: {
         title: newPost.title,
