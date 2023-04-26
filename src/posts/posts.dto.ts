@@ -5,9 +5,7 @@ export interface CreatePostDto {
   postMedia: any[];
 }
 
-export interface UpdatePostDto {
-  title: string;
-  description: string;
-  postMedia: any[];
-  userId: string;
+export interface SearchPostParamsDto {
+  title?: string;
+  description?: string;
 }
