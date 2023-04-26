@@ -20,6 +20,6 @@ export class AppController {
   @Public()
   @Get('/')
   async helloFromUs() {
-    return '<h1>Hello from the Hyades team</h1><p>Cristian Scapin, Matteo Brusarosco and Antonio Gelain</p>';
+    return '<h1>Hello from the Hyades team 👾</h1><p>Cristian Scapin, Matteo Brusarosco and Antonio Gelain</p>';
   }
 }
