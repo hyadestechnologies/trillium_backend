@@ -11,3 +11,8 @@ export interface UpdatePostDto {
   postMedia: any[];
   userId: string;
 }
+
+export interface SearchPostParamsDto {
+  title?: string;
+  description?: string;
+}

@@ -12,7 +12,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
-import { CreatePostDto, UpdatePostDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto, UpdatePostDto } from './posts.dto';
 import { Public } from 'src/decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
@@ -46,5 +46,11 @@ export class PostsController {
   async updatePost(@Body() newPost: any, @Param('id') postId) {
     console.log(newPost);
     return this.service.updatePost(newPost, postId);
+  }
+
+  @Public()
+  @Post('search')
+  async searchPost(@Body() searchParams: SearchPostParamsDto) {
+    return this.service.searchPost(searchParams);
   }
 }

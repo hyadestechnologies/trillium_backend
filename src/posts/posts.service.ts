@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-import { CreatePostDto, UpdatePostDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto, UpdatePostDto } from './posts.dto';
 
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
@@ -62,7 +62,36 @@ export class PostsService extends PrismaClient implements OnModuleInit {
       return updatePost;
     } catch (exp) {
       console.log(exp);
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      return new HttpException('Not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  public async searchPost(searchParams: SearchPostParamsDto) {
+    try {
+      if (!searchParams.title && !searchParams.description) {
+        return new HttpException(
+          'Provide search params',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      searchParams.title = searchParams.title ?? '';
+      searchParams.description = searchParams.description ?? '';
+
+      const posts = await this.post.findMany({
+        where: {
+          title: { contains: searchParams.title },
+          description: { contains: searchParams.description },
+        },
+      });
+
+      return posts;
+    } catch (exp) {
+      console.log(exp);
+      return new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
