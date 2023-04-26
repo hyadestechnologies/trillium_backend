@@ -12,14 +12,14 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
-import { CreatePostDto, SearchPostParamsDto, UpdatePostDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto } from './posts.dto';
 import { Public } from 'src/decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
 export class PostsController {
   constructor(private readonly service: PostsService) {}
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Public()
   @Post('create')
   async createNewPost(@Body() newPost: CreatePostDto) {
@@ -33,7 +33,7 @@ export class PostsController {
     return await this.service.getAllPosts(parseInt(page), parseInt(size));
   }
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Public()
   @Delete('delete/:id')
   async deletePost(@Param('id') postId) {
@@ -41,9 +41,9 @@ export class PostsController {
   }
 
   @Public()
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('update/:id')
-  async updatePost(@Body() newPost: any, @Param('id') postId) {
+  async updatePost(@Body() newPost: CreatePostDto, @Param('id') postId) {
     console.log(newPost);
     return this.service.updatePost(newPost, postId);
   }

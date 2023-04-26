@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-import { CreatePostDto, SearchPostParamsDto, UpdatePostDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto } from './posts.dto';
 
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
@@ -54,7 +54,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async updatePost(newPost: UpdatePostDto, postId: string) {
+  public async updatePost(newPost: CreatePostDto, postId: string) {
     try {
       const updatePost = await this.post.updateMany({
         where: {
@@ -69,7 +69,6 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return updatePost;
     } catch (exp) {
-      console.log(exp);
       return new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
