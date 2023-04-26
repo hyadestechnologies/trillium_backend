@@ -11,25 +11,33 @@ import { CreatePostDto, SearchPostParamsDto, UpdatePostDto } from './posts.dto';
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
   public async createNewPost(newPost: CreatePostDto) {
-    const post = await this.post.create({
-      data: {
-        title: newPost.title,
-        description: newPost.description,
-        userId: newPost.userId,
-        deletedOn: null,
-      },
-    });
+    try {
+      const post = await this.post.create({
+        data: {
+          title: newPost.title,
+          description: newPost.description,
+          userId: newPost.userId,
+          deletedOn: null,
+        },
+      });
 
-    return post;
+      return post;
+    } catch (exp) {
+      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   public async getAllPosts(page: number, size: number) {
-    const posts = await this.post.findMany({
-      skip: page * size,
-      take: size,
-    });
+    try {
+      const posts = await this.post.findMany({
+        skip: page * size,
+        take: size,
+      });
 
-    return posts;
+      return posts;
+    } catch (exp) {
+      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   public async deletePost(postId: string) {
@@ -42,7 +50,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return deletePost;
     } catch (exp) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      return new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -87,11 +95,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return posts;
     } catch (exp) {
-      console.log(exp);
-      return new HttpException(
-        'Internal server error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
