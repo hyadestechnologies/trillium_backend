@@ -1,8 +1,9 @@
-import { Controller } from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import {
   Body,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -28,6 +29,7 @@ export class PostsController {
   }
 
   @Public()
+  @HttpCode(200)
   @Get('getAll/:page/:size')
   async getAllPosts(@Param('page') page, @Param('size') size) {
     return await this.service.getAllPosts(parseInt(page), parseInt(size));
@@ -35,6 +37,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Public()
+  @HttpCode(200)
   @Delete('delete/:id')
   async deletePost(@Param('id') postId) {
     return this.service.deletePost(postId);
@@ -42,13 +45,14 @@ export class PostsController {
 
   @Public()
   @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
   @Put('update/:id')
   async updatePost(@Body() newPost: CreatePostDto, @Param('id') postId) {
-    console.log(newPost);
     return this.service.updatePost(newPost, postId);
   }
 
   @Public()
+  @HttpCode(200)
   @Post('search')
   async searchPost(@Body() searchParams: SearchPostParamsDto) {
     return this.service.searchPost(searchParams);

@@ -6,6 +6,5 @@ export interface CreatePostDto {
 }
 
 export interface SearchPostParamsDto {
-  title?: string;
-  description?: string;
+  searchQuery?: string;
 }
