@@ -23,7 +23,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return post;
     } catch (exp) {
-      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -36,7 +36,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return posts;
     } catch (exp) {
-      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -50,7 +50,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return deletePost;
     } catch (exp) {
-      return new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -69,32 +69,31 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return updatePost;
     } catch (exp) {
-      return new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
     }
   }
 
   public async searchPost(searchParams: SearchPostParamsDto) {
     try {
-      if (!searchParams.title && !searchParams.description) {
+      if (!searchParams.searchQuery) {
         return new HttpException(
           'Provide search params',
           HttpStatus.BAD_REQUEST,
         );
       }
 
-      searchParams.title = searchParams.title ?? '';
-      searchParams.description = searchParams.description ?? '';
-
       const posts = await this.post.findMany({
         where: {
-          title: { contains: searchParams.title },
-          description: { contains: searchParams.description },
+          OR: [
+            { title: { contains: searchParams.searchQuery } },
+            { description: { contains: searchParams.searchQuery } },
+          ],
         },
       });
 
       return posts;
     } catch (exp) {
-      return new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
