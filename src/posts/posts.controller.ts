@@ -8,12 +8,13 @@ import {
   Post,
   Put,
   UseGuards,
+  Request,
 } from '@nestjs/common/decorators';
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
-import { CreatePostDto, SearchPostParamsDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
 import { Public } from 'src/decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
@@ -21,11 +22,10 @@ export class PostsController {
   constructor(private readonly service: PostsService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Public()
   @Post('create')
-  async createNewPost(@Body() newPost: CreatePostDto) {
+  async createNewPost(@Request() req, @Body() newPost: CreatePostDto) {
     // call service to create post
-    return await this.service.createNewPost(newPost);
+    return await this.service.createNewPost(newPost, req.user);
   }
 
   @Public()
@@ -36,19 +36,21 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Public()
   @HttpCode(200)
   @Delete('delete/:id')
-  async deletePost(@Param('id') postId) {
-    return this.service.deletePost(postId);
+  async deletePost(@Request() req, @Param('id') postId) {
+    return this.service.deletePost(postId, req.user);
   }
 
-  @Public()
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Put('update/:id')
-  async updatePost(@Body() newPost: CreatePostDto, @Param('id') postId) {
-    return this.service.updatePost(newPost, postId);
+  async updatePost(
+    @Request() req,
+    @Body() newPost: CreatePostDto,
+    @Param('id') postId,
+  ) {
+    return this.service.updatePost(newPost, postId, req.user);
   }
 
   @Public()

@@ -4,19 +4,19 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { User, PrismaClient } from '@prisma/client';
 
-import { CreatePostDto, SearchPostParamsDto } from './posts.dto';
+import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
 
 @Injectable()
 export class PostsService extends PrismaClient implements OnModuleInit {
-  public async createNewPost(newPost: CreatePostDto) {
+  public async createNewPost(newPost: CreatePostDto, user: User) {
     try {
       const post = await this.post.create({
         data: {
           title: newPost.title,
           description: newPost.description,
-          userId: newPost.userId,
+          userId: user.id,
           deletedOn: null,
         },
       });
@@ -40,13 +40,18 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async deletePost(postId: string) {
+  public async deletePost(postId: string, user: User) {
     try {
-      const deletePost = await this.post.delete({
+      const deletePost = await this.post.deleteMany({
         where: {
           id: postId,
+          userId: user.id,
         },
       });
+
+      if (deletePost.count === 0) {
+        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      }
 
       return deletePost;
     } catch (exp) {
@@ -54,12 +59,12 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async updatePost(newPost: CreatePostDto, postId: string) {
+  public async updatePost(newPost: CreatePostDto, postId: string, user: User) {
     try {
       const updatePost = await this.post.updateMany({
         where: {
           id: postId,
-          userId: newPost.userId,
+          userId: user.id,
         },
         data: {
           title: newPost.title,
