@@ -32,4 +32,10 @@ export class UsersController {
     console.log(req.user);
     return this.userService.sendFriendRequest(toUser, req.user);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('friend_requests')
+  getFriendRequests(@Request() req) {
+    return this.userService.getUserFriendRequests(req.user.username);
+  }
 }

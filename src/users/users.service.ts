@@ -72,10 +72,6 @@ export class UsersService extends PrismaClient implements OnModuleInit {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    if (senderId == null) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-    }
-
     // it should only be one or zero
     const prevRequests = await this.friendRequest.findMany({
       where: {
@@ -96,5 +92,31 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     });
 
     return friendRequest;
+  }
+
+  async getUserFriendRequests(
+    friendReqOfUsername: string,
+  ): Promise<FriendRequest[]> {
+    // get user id
+    let userId: string | null = null;
+    try {
+      const user = await this.user.findUniqueOrThrow({
+        where: {
+          username: friendReqOfUsername,
+        },
+      });
+      userId = user.id;
+    } catch (err) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    // get all user friend requests
+    const friendRequests = await this.friendRequest.findMany({
+      where: {
+        receiverId: userId,
+      },
+    });
+
+    return friendRequests;
   }
 }
