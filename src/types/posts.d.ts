@@ -6,4 +6,6 @@ export interface CreatePostDto {
 
 export interface SearchPostParamsDto {
   searchQuery?: string;
+  pageSize?: number;
+  page?: number;
 }
