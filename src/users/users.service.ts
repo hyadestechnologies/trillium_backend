@@ -119,4 +119,38 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
     return friendRequests;
   }
+
+  async acceptFriendRequest(username: string, requestId: string) {
+    // get user id
+    let userId: string | null = null;
+    try {
+      const user = await this.user.findUniqueOrThrow({
+        where: {
+          username: username,
+        },
+      });
+      userId = user.id;
+    } catch (err) {
+      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    }
+
+    const updated = await this.friendRequest.updateMany({
+      where: {
+        receiverId: userId,
+        id: requestId,
+        accepted: false,
+      },
+      data: {
+        accepted: true,
+      },
+    });
+
+    if (updated.count === 0) {
+      throw new HttpException('Request Not Found', HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      success: true,
+    };
+  }
 }

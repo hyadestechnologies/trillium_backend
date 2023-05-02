@@ -28,7 +28,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Post('send_request/:to')
-  sendFriendRequest(@Request() req, @Param('to') toUser) {
+  sendFriendRequest(@Request() req, @Param('to') toUser: string) {
     console.log(req.user);
     return this.userService.sendFriendRequest(toUser, req.user);
   }
@@ -37,5 +37,11 @@ export class UsersController {
   @Get('friend_requests')
   getFriendRequests(@Request() req) {
     return this.userService.getUserFriendRequests(req.user.username);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('accept_request/:id')
+  acceptFriendRequest(@Request() req, @Param('id') requestId: string) {
+    return this.userService.acceptFriendRequest(req.user.username, requestId);
   }
 }
