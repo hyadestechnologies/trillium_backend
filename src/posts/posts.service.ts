@@ -86,6 +86,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           HttpStatus.BAD_REQUEST,
         );
       }
+
       const pageSize = searchParams.pageSize ?? 5;
       const page = searchParams.page ?? 0;
 
