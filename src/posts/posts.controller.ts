@@ -24,7 +24,6 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('create')
   async createNewPost(@Request() req, @Body() newPost: CreatePostDto) {
-    // call service to create post
     return await this.service.createNewPost(newPost, req.user);
   }
 
