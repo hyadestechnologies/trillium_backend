@@ -5,8 +5,9 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { User, FriendRequest, PrismaClient } from '@prisma/client';
-import { signupUserType } from 'src/types/types';
+import { User, PrismaClient } from '@prisma/client';
+import { UserInfo } from 'os';
+import { signupUserType, userInfoType } from 'src/types/types';
 
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {
@@ -24,7 +25,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
       return user;
     } catch (NotFoundError) {
-      return null;
+      throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -152,5 +153,26 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     return {
       success: true,
     };
+  }
+
+  async getUserProfile(userId: string): Promise<userInfoType> {
+    try {
+      const userInfo = await this.user.findUniqueOrThrow({
+        where: {
+          id: userId,
+        },
+      });
+
+      // we don't want to return passwords to the client
+      return {
+        username: userInfo.username,
+        email: userInfo.email,
+        name: userInfo.name ?? '',
+        surname: userInfo.surname ?? '',
+        description: userInfo.description ?? '',
+      };
+    } catch (NotFoundError) {
+      throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+    }
   }
 }

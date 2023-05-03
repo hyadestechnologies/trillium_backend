@@ -44,4 +44,9 @@ export class UsersController {
   acceptFriendRequest(@Request() req, @Param('id') requestId: string) {
     return this.userService.acceptFriendRequest(req.user.username, requestId);
   }
+
+  @Get('profile/:userId')
+  getProfile(@Param('userId') userId: string) {
+    return this.userService.getUserProfile(userId);
+  }
 }
