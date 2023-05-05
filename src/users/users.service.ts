@@ -5,7 +5,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { User, PrismaClient } from '@prisma/client';
+import { User, PrismaClient, FriendRequest } from '@prisma/client';
 import { UserInfo } from 'os';
 import { signupUserType, userInfoType } from 'src/types/types';
 
@@ -84,7 +84,6 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     if (prevRequests.length > 0) {
       return prevRequests[0];
     }
-
     const friendRequest = await this.friendRequest.create({
       data: {
         senderId: senderId,
