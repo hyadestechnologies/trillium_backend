@@ -107,6 +107,22 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
+  public async getUserPosts(page: number, size: number, id: string) {
+    try {
+      const posts = await this.post.findMany({
+        skip: page * size,
+        take: size,
+        where: {
+          userId: id,
+        },
+      });
+
+      return posts;
+    } catch (exp) {
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async onModuleInit() {
     await this.$connect();
   }

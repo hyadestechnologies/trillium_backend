@@ -1,10 +1,11 @@
 import {
   Controller,
   Get,
+  Param,
+  Put,
   Post,
   Request,
   UseGuards,
-  Param,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Public } from 'src/decorators/public-decorator';
@@ -13,12 +14,6 @@ import { UsersService } from './users.service';
 @Controller({ path: 'users', version: '1' })
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
 
   @Public()
   @Get('all')
@@ -45,8 +40,16 @@ export class UsersController {
     return this.userService.acceptFriendRequest(req.user.username, requestId);
   }
 
+  @Public()
   @Get('profile/:userId')
   getProfile(@Param('userId') userId: string) {
     return this.userService.getUserProfile(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile/updateDescription')
+  updateUserDescription(@Request() req) {
+    // todo: maybe it's better to create a generic updateUserInfo method
+    return req.user;
   }
 }
