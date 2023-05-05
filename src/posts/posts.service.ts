@@ -87,7 +87,12 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         );
       }
 
+      const pageSize = searchParams.pageSize ?? 5;
+      const page = searchParams.page ?? 0;
+
       const posts = await this.post.findMany({
+        skip: page * pageSize,
+        take: pageSize,
         where: {
           OR: [
             { title: { contains: searchParams.searchQuery } },
