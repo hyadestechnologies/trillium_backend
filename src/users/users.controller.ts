@@ -6,6 +6,7 @@ import {
   Post,
   Request,
   UseGuards,
+  Body,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Public } from 'src/decorators/public-decorator';
@@ -17,14 +18,13 @@ export class UsersController {
 
   @Public()
   @Get('all')
-  getAllUsers(@Request() req) {
+  getAllUsers() {
     return this.userService.getAllUsers();
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('send_request/:to')
   sendFriendRequest(@Request() req, @Param('to') toUser: string) {
-    console.log(req.user);
     return this.userService.sendFriendRequest(toUser, req.user);
   }
 
@@ -47,9 +47,8 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('profile/updateDescription')
-  updateUserDescription(@Request() req) {
-    // todo: maybe it's better to create a generic updateUserInfo method
-    return req.user;
+  @Put('profile/update')
+  updateProfile(@Request() req, @Body() userProfileInfo) {
+    return this.userService.updateProfile(req.user, userProfileInfo);
   }
 }

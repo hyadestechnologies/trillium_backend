@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { User, PrismaClient, FriendRequest } from '@prisma/client';
-import { UserInfo } from 'os';
+import { userInfo, UserInfo } from 'os';
 import { signupUserType, userInfoType } from 'src/types/types';
 
 @Injectable()
@@ -173,5 +173,50 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     } catch (NotFoundError) {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
+  }
+
+  async updateProfile(user, newUserInfo: userInfoType) {
+    if (!this.validateUserInfo(newUserInfo)) {
+      throw new HttpException(
+        'Params are missing or not well formed',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const updatedUserInfo = await this.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          username: newUserInfo.username,
+          email: newUserInfo.email,
+          description: newUserInfo.description,
+          name: newUserInfo.name,
+          surname: newUserInfo.surname,
+        },
+      });
+
+      return updatedUserInfo;
+    } catch (exp) {
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private validateUserInfo(userInfo: userInfoType): boolean {
+    const namingRegex = new RegExp(/^[a-zA-Z0-9_.@]+$/);
+
+    return (
+      !(
+        !userInfo.email ||
+        !userInfo.name ||
+        !userInfo.surname ||
+        !userInfo.username
+      ) &&
+      namingRegex.test(userInfo.email) &&
+      namingRegex.test(userInfo.name) &&
+      namingRegex.test(userInfo.surname) &&
+      namingRegex.test(userInfo.username)
+    );
   }
 }
