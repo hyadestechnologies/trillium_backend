@@ -170,7 +170,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
         surname: userInfo.surname ?? '',
         description: userInfo.description ?? '',
       };
-    } catch (NotFoundError) {
+    } catch (exp) {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
   }
