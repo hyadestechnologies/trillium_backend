@@ -27,11 +27,58 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async getAllPosts(page: number, size: number) {
+  public async getAllPosts(page: number, size: number, user) {
+    console.log(user);
+
+    try {
+      const friends = await this.friendRequest.findMany({
+        where: {
+          OR: [{ senderId: user.id }, { receiverId: user.id }],
+          accepted: true,
+        },
+      });
+
+      console.log(friends);
+
+      /*
+       * Usare in per trovare se id utente che ha caricato il post fa
+       * parte delle amicizie dell'utente loggato
+       */
+
+      /*
+      const posts = await this.post.findMany({
+        skip: page * size,
+        take: size,
+        where: {
+          OR: [
+            { visibility: 'public' },
+            {
+              user: {
+                id: { in: friends },
+              },
+            },
+          ],
+          NOT: {
+            visibility: 'hidden',
+          },
+        },
+      });
+      */
+
+      return friends;
+    } catch (exp) {
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  public async getAllPostsUnsigned(page: number, size: number) {
     try {
       const posts = await this.post.findMany({
         skip: page * size,
         take: size,
+        where: {
+          visibility: 'public',
+        },
       });
 
       return posts;

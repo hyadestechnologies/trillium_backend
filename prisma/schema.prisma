@@ -48,6 +48,7 @@ model Post {
   userId       String      @db.ObjectId
   postComments String[]    @default([])
   PostMedia    PostMedia[]
+  visibility   String      @default("public")
 }
 
 model PostMedia {

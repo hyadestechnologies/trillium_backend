@@ -27,11 +27,25 @@ export class PostsController {
     return await this.service.createNewPost(newPost, req.user);
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get('getAll/:page/:size')
-  async getAllPosts(@Param('page') page, @Param('size') size) {
-    return await this.service.getAllPosts(parseInt(page), parseInt(size));
+  async getAllPosts(@Param('page') page, @Param('size') size, @Request() req) {
+    return await this.service.getAllPosts(
+      parseInt(page),
+      parseInt(size),
+      req.user,
+    );
+  }
+
+  @Public()
+  @HttpCode(200)
+  @Get('getAllUnsigned/:page/:size')
+  async getAllPostsUnsigned(@Param('page') page, @Param('size') size) {
+    return await this.service.getAllPostsUnsigned(
+      parseInt(page),
+      parseInt(size),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
