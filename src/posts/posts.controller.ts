@@ -15,7 +15,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
 import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
-import { Public } from 'src/decorators/public-decorator';
+import { Public, Optional } from 'src/decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
 export class PostsController {
@@ -27,6 +27,7 @@ export class PostsController {
     return await this.service.createNewPost(newPost, req.user);
   }
 
+  @Optional()
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @Get('getAll/:page/:size')
@@ -35,16 +36,6 @@ export class PostsController {
       parseInt(page),
       parseInt(size),
       req.user,
-    );
-  }
-
-  @Public()
-  @HttpCode(200)
-  @Get('getAllUnsigned/:page/:size')
-  async getAllPostsUnsigned(@Param('page') page, @Param('size') size) {
-    return await this.service.getAllPostsUnsigned(
-      parseInt(page),
-      parseInt(size),
     );
   }
 

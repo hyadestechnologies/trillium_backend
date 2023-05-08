@@ -1,7 +1,7 @@
 export interface CreatePostDto {
   title: string;
   description: string;
-  postMedia: any[];
+  visibility?: string;
 }
 
 export interface SearchPostParamsDto {

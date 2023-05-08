@@ -18,6 +18,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           description: newPost.description,
           userId: user.id,
           deletedOn: null,
+          visibility: newPost.visibility ?? 'public',
         },
       });
 
@@ -28,8 +29,6 @@ export class PostsService extends PrismaClient implements OnModuleInit {
   }
 
   public async getAllPosts(page: number, size: number, user) {
-    console.log(user);
-
     try {
       const friends = await this.friendRequest.findMany({
         where: {
@@ -38,14 +37,8 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         },
       });
 
-      console.log(friends);
+      const tempFriends = ['63d8314e222ee28ce133f36f'];
 
-      /*
-       * Usare in per trovare se id utente che ha caricato il post fa
-       * parte delle amicizie dell'utente loggato
-       */
-
-      /*
       const posts = await this.post.findMany({
         skip: page * size,
         take: size,
@@ -54,7 +47,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
             { visibility: 'public' },
             {
               user: {
-                id: { in: friends },
+                id: { in: tempFriends },
               },
             },
           ],
@@ -63,9 +56,8 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           },
         },
       });
-      */
 
-      return friends;
+      return posts;
     } catch (exp) {
       throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
