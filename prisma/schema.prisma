@@ -23,6 +23,7 @@ model User {
   Post         Post[]
   userSender   FriendRequest[] @relation("userSender")
   userReceiver FriendRequest[] @relation("userReceiver")
+  friends      String[]        @db.ObjectId
 }
 
 model FriendRequest {

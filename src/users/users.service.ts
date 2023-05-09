@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 
 import { User, PrismaClient, FriendRequest } from '@prisma/client';
-import { userInfo, UserInfo } from 'os';
 import { signupUserType, userInfoType } from 'src/types/types';
 
 @Injectable()
@@ -120,34 +119,35 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     return friendRequests;
   }
 
-  async acceptFriendRequest(username: string, requestId: string) {
+  async acceptFriendRequest(receiverId: string, requestId: string) {
     // get user id
-    let userId: string | null = null;
+
+    let updated: FriendRequest & {
+      sender: User;
+      receiver: User;
+    };
+
     try {
-      const user = await this.user.findUniqueOrThrow({
+      updated = await this.friendRequest.update({
         where: {
-          username: username,
+          id: requestId,
+        },
+        include: {
+          receiver: true,
+          sender: true,
+        },
+        data: {
+          accepted: true,
         },
       });
-      userId = user.id;
-    } catch (err) {
-      throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
+    } catch (e) {
+      console.error(`friend request with id "${requestId}" not found`, e);
+      throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
     }
 
-    const updated = await this.friendRequest.updateMany({
-      where: {
-        receiverId: userId,
-        id: requestId,
-        accepted: false,
-      },
-      data: {
-        accepted: true,
-      },
-    });
-
-    if (updated.count === 0) {
-      throw new HttpException('Request Not Found', HttpStatus.NOT_FOUND);
-    }
+    // update the two users friends list
+    this.updateUserFriendsList(updated.receiver, updated.senderId);
+    this.updateUserFriendsList(updated.sender, updated.receiverId);
 
     return {
       success: true,
@@ -173,6 +173,32 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     } catch (exp) {
       throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
+  }
+
+  async updateUserFriendsList(user: User, friendId: string) {
+    const oldFriendsList = user.friends;
+
+    if (oldFriendsList.includes(friendId)) {
+      return true;
+    }
+
+    const friendsList = oldFriendsList.concat([friendId]);
+
+    try {
+      const updated = await this.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          friends: friendsList,
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+
+    return true;
   }
 
   async updateProfile(user, newUserInfo: userInfoType) {

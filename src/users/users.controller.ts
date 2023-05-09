@@ -37,7 +37,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Post('accept_request/:id')
   acceptFriendRequest(@Request() req, @Param('id') requestId: string) {
-    return this.userService.acceptFriendRequest(req.user.username, requestId);
+    return this.userService.acceptFriendRequest(req.user.id, requestId);
   }
 
   @Public()
