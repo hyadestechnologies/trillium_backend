@@ -146,8 +146,32 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     }
 
     // update the two users friends list
-    this.updateUserFriendsList(updated.receiver, updated.senderId);
-    this.updateUserFriendsList(updated.sender, updated.receiverId);
+    const updateList = [
+      { user: updated.receiver, friend: updated.senderId },
+      { user: updated.sender, friend: updated.receiverId },
+    ];
+    for (const { user, friend } of updateList) {
+      const res = await this.updateUserFriendsList(user, friend);
+      if (res === false) {
+        try {
+          await this.friendRequest.update({
+            where: {
+              id: requestId,
+            },
+            data: {
+              accepted: false,
+            },
+          });
+        } catch (e) {
+          console.error(`friend request with id "${requestId}" not found`, e);
+          throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        }
+        throw new HttpException(
+          'Server error 🤯',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
 
     return {
       success: true,
