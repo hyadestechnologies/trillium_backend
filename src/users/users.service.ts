@@ -184,6 +184,12 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     }
 
     try {
+      const loggedUser = await this.user.findUniqueOrThrow({
+        where: {
+          id: user.id,
+        },
+      });
+
       const updatedUserInfo = await this.user.update({
         where: {
           id: user.id,
@@ -199,7 +205,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
       return updatedUserInfo;
     } catch (exp) {
-      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
   }
 

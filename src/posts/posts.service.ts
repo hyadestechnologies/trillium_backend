@@ -108,7 +108,18 @@ export class PostsService extends PrismaClient implements OnModuleInit {
   }
 
   public async getUserPosts(page: number, size: number, id: string) {
+    if (isNaN(page) || isNaN(size)) {
+      throw new HttpException(
+        'Page or size are not valid',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     try {
+      const searchedUser = await this.user.findUniqueOrThrow({
+        where: { id: id },
+      });
+
       const posts = await this.post.findMany({
         skip: page * size,
         take: size,
@@ -119,7 +130,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
       return posts;
     } catch (exp) {
-      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
   }
 
