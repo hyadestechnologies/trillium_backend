@@ -58,4 +58,19 @@ export class PostsController {
   async searchPost(@Body() searchParams: SearchPostParamsDto) {
     return this.service.searchPost(searchParams);
   }
+
+  @Public()
+  @HttpCode(200)
+  @Get('getAll/:userId/:page/:size')
+  async getUserPosts(
+    @Param('page') page,
+    @Param('size') size,
+    @Param('userId') userId,
+  ) {
+    return await this.service.getUserPosts(
+      parseInt(page),
+      parseInt(size),
+      userId,
+    );
+  }
 }

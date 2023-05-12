@@ -5,8 +5,9 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { User, FriendRequest, PrismaClient } from '@prisma/client';
-import { signupUserType } from 'src/types/types';
+import { User, PrismaClient, FriendRequest } from '@prisma/client';
+import { userInfo, UserInfo } from 'os';
+import { signupUserType, userInfoType } from 'src/types/types';
 
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {
@@ -24,7 +25,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
       return user;
     } catch (NotFoundError) {
-      return null;
+      throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
     }
   }
 
@@ -83,7 +84,6 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     if (prevRequests.length > 0) {
       return prevRequests[0];
     }
-
     const friendRequest = await this.friendRequest.create({
       data: {
         senderId: senderId,
@@ -152,5 +152,77 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     return {
       success: true,
     };
+  }
+
+  async getUserProfile(userId: string): Promise<userInfoType> {
+    try {
+      const userInfo = await this.user.findUniqueOrThrow({
+        where: {
+          id: userId,
+        },
+      });
+
+      // we don't want to return passwords to the client
+      return {
+        username: userInfo.username,
+        email: userInfo.email,
+        name: userInfo.name ?? '',
+        surname: userInfo.surname ?? '',
+        description: userInfo.description ?? '',
+      };
+    } catch (exp) {
+      throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async updateProfile(user, newUserInfo: userInfoType) {
+    if (!this.validateUserInfo(newUserInfo)) {
+      throw new HttpException(
+        'Params are missing or not well formed',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    try {
+      const loggedUser = await this.user.findUniqueOrThrow({
+        where: {
+          id: user.id,
+        },
+      });
+
+      const updatedUserInfo = await this.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          username: newUserInfo.username,
+          email: newUserInfo.email,
+          description: newUserInfo.description,
+          name: newUserInfo.name,
+          surname: newUserInfo.surname,
+        },
+      });
+
+      return updatedUserInfo;
+    } catch (exp) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  private validateUserInfo(userInfo: userInfoType): boolean {
+    const namingRegex = new RegExp(/^[a-zA-Z0-9_.@]+$/);
+
+    return (
+      !(
+        !userInfo.email ||
+        !userInfo.name ||
+        !userInfo.surname ||
+        !userInfo.username
+      ) &&
+      namingRegex.test(userInfo.email) &&
+      namingRegex.test(userInfo.name) &&
+      namingRegex.test(userInfo.surname) &&
+      namingRegex.test(userInfo.username)
+    );
   }
 }

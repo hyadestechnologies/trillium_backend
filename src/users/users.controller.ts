@@ -1,10 +1,12 @@
 import {
   Controller,
   Get,
+  Param,
+  Put,
   Post,
   Request,
   UseGuards,
-  Param,
+  Body,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Public } from 'src/decorators/public-decorator';
@@ -14,22 +16,15 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
-  }
-
   @Public()
   @Get('all')
-  getAllUsers(@Request() req) {
+  getAllUsers() {
     return this.userService.getAllUsers();
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('send_request/:to')
   sendFriendRequest(@Request() req, @Param('to') toUser: string) {
-    console.log(req.user);
     return this.userService.sendFriendRequest(toUser, req.user);
   }
 
@@ -43,5 +38,17 @@ export class UsersController {
   @Post('accept_request/:id')
   acceptFriendRequest(@Request() req, @Param('id') requestId: string) {
     return this.userService.acceptFriendRequest(req.user.username, requestId);
+  }
+
+  @Public()
+  @Get('profile/:userId')
+  getProfile(@Param('userId') userId: string) {
+    return this.userService.getUserProfile(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('profile/update')
+  updateProfile(@Request() req, @Body() userProfileInfo) {
+    return this.userService.updateProfile(req.user, userProfileInfo);
   }
 }
