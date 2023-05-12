@@ -7,6 +7,7 @@ import {
   Request,
   UseGuards,
   Body,
+  HttpCode,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Public } from 'src/decorators/public-decorator';
@@ -34,10 +35,11 @@ export class UsersController {
     return this.userService.getUserFriendRequests(req.user.username);
   }
 
+  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Post('accept_request/:id')
   acceptFriendRequest(@Request() req, @Param('id') requestId: string) {
-    return this.userService.acceptFriendRequest(req.user.username, requestId);
+    return this.userService.acceptFriendRequest(req.user.id, requestId);
   }
 
   @Public()
