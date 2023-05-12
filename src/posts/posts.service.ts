@@ -30,14 +30,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
   public async getAllPosts(page: number, size: number, user) {
     try {
-      const friends = await this.friendRequest.findMany({
+      const loggedUser = await this.user.findUnique({
         where: {
-          OR: [{ senderId: user.id }, { receiverId: user.id }],
-          accepted: true,
+          id: user.id,
         },
       });
 
-      const tempFriends = ['63d8314e222ee28ce133f36f'];
+      const userFriends = loggedUser ? loggedUser.friends : [];
 
       const posts = await this.post.findMany({
         skip: page * size,
@@ -47,7 +46,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
             { visibility: 'public' },
             {
               user: {
-                id: { in: tempFriends },
+                id: { in: userFriends },
               },
             },
           ],
