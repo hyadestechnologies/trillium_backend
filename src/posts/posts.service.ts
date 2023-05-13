@@ -62,22 +62,6 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async getAllPostsUnsigned(page: number, size: number) {
-    try {
-      const posts = await this.post.findMany({
-        skip: page * size,
-        take: size,
-        where: {
-          visibility: 'public',
-        },
-      });
-
-      return posts;
-    } catch (exp) {
-      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   public async deletePost(postId: string, user: User) {
     try {
       const deletePost = await this.post.deleteMany({
@@ -99,7 +83,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
   public async updatePost(newPost: CreatePostDto, postId: string, user: User) {
     try {
-      const updatePost = await this.post.updateMany({
+      let queryArgs: {
+        where: {
+          id: string;
+          userId: string;
+        };
+        data: CreatePostDto;
+      } = {
         where: {
           id: postId,
           userId: user.id,
@@ -108,11 +98,34 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           title: newPost.title,
           description: newPost.description,
         },
+      };
+
+      if (newPost.visibility) {
+        queryArgs = {
+          where: {
+            ...queryArgs.where,
+          },
+          data: {
+            ...queryArgs.data,
+            visibility: newPost.visibility,
+          },
+        };
+      }
+
+      const updatePost = await this.post.updateMany({
+        ...queryArgs,
       });
 
-      return updatePost;
+      if (updatePost.count < 1) {
+        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Post updated successfully!',
+      };
     } catch (exp) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
     }
   }
 
