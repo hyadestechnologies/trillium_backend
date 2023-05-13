@@ -29,6 +29,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
   }
 
   public async getAllPosts(page: number, size: number, user) {
+    if (isNaN(page) || isNaN(size)) {
+      throw new HttpException(
+        'Page or size are not valid',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     try {
       const loggedUser = await this.user.findUnique({
         where: {
