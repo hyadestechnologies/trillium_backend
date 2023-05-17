@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { User, PrismaClient } from '@prisma/client';
+import { User, PrismaClient, PostVisibility } from '@prisma/client';
 
 import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
 
@@ -18,10 +18,9 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           description: newPost.description,
           userId: user.id,
           deletedOn: null,
-          visibility: newPost.visibility ?? 'public',
+          visibility: newPost.visibility ?? PostVisibility.public,
         },
       });
-
       return post;
     } catch (exp) {
       throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -50,7 +49,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         take: size,
         where: {
           OR: [
-            { visibility: 'public' },
+            { visibility: PostVisibility.public },
             {
               user: {
                 id: { in: userFriends },
@@ -58,7 +57,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
             },
           ],
           NOT: {
-            visibility: 'hidden',
+            visibility: PostVisibility.hidden,
           },
         },
       });
@@ -132,7 +131,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
         message: 'Post updated successfully!',
       };
     } catch (exp) {
-      throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

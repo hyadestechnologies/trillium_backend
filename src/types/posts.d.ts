@@ -1,7 +1,9 @@
+import { PostVisibility } from '@prisma/client';
+
 export interface CreatePostDto {
   title: string;
   description: string;
-  visibility?: string;
+  visibility?: PostVisibility;
 }
 
 export interface SearchPostParamsDto {
