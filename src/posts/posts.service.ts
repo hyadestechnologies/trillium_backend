@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { User, PrismaClient } from '@prisma/client';
+import { User, PrismaClient, PostVisibility } from '@prisma/client';
 
 import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
 
@@ -18,20 +18,48 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           description: newPost.description,
           userId: user.id,
           deletedOn: null,
+          visibility: newPost.visibility ?? PostVisibility.public,
         },
       });
-
       return post;
     } catch (exp) {
       throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  public async getAllPosts(page: number, size: number) {
+  public async getAllPosts(page: number, size: number, user) {
+    if (isNaN(page) || isNaN(size)) {
+      throw new HttpException(
+        'Page or size are not valid',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     try {
+      const loggedUser = await this.user.findUnique({
+        where: {
+          id: user.id,
+        },
+      });
+
+      const userFriends = loggedUser ? loggedUser.friends : [];
+
       const posts = await this.post.findMany({
         skip: page * size,
         take: size,
+        where: {
+          OR: [
+            { visibility: PostVisibility.public },
+            {
+              user: {
+                id: { in: userFriends },
+              },
+            },
+          ],
+          NOT: {
+            visibility: PostVisibility.hidden,
+          },
+        },
       });
 
       return posts;
@@ -61,7 +89,13 @@ export class PostsService extends PrismaClient implements OnModuleInit {
 
   public async updatePost(newPost: CreatePostDto, postId: string, user: User) {
     try {
-      const updatePost = await this.post.updateMany({
+      let queryArgs: {
+        where: {
+          id: string;
+          userId: string;
+        };
+        data: CreatePostDto;
+      } = {
         where: {
           id: postId,
           userId: user.id,
@@ -70,11 +104,34 @@ export class PostsService extends PrismaClient implements OnModuleInit {
           title: newPost.title,
           description: newPost.description,
         },
+      };
+
+      if (newPost.visibility) {
+        queryArgs = {
+          where: {
+            ...queryArgs.where,
+          },
+          data: {
+            ...queryArgs.data,
+            visibility: newPost.visibility,
+          },
+        };
+      }
+
+      const updatePost = await this.post.updateMany({
+        ...queryArgs,
       });
 
-      return updatePost;
+      if (updatePost.count < 1) {
+        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Post updated successfully!',
+      };
     } catch (exp) {
-      throw new HttpException('Not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
