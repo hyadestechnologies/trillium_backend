@@ -3,19 +3,36 @@ import {
   Get,
   Param,
   Put,
-  Post,
   Request,
   UseGuards,
-  Body,
-  HttpCode,
 } from '@nestjs/common';
+import {AccountVisibility, Languages} from '@prisma/client';
 
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Public } from 'src/decorators/public-decorator';
 
 import { UserSettingsService } from './user-settings.service';
 
 @Controller({ path: 'settings', version: '1' })
 export class UserSettingsController {
   constructor(private readonly settingsService: UserSettingsService) {}
+
+    @UseGuards(JwtAuthGuard)
+    @Put('visibility/:visibility')
+    async setVisibility(
+        @Request() req: any, 
+        @Param('visibility') visibility: AccountVisibility
+    ) {
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('language/:language')
+    async setLanguage(@Request() req: any, @Param('id') language: Languages) {
+        return this.settingsService.setUserLanguage(req.user, language);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('current')
+    async getSettings(@Request() req: any) {
+        return this.settingsService.getUserSettings(req.user);
+    }
 }

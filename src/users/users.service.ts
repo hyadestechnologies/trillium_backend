@@ -43,7 +43,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
         surname: user.surname,
       },
     });
-
+    
     return newUser;
   }
 
