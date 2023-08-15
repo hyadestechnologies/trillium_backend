@@ -4,7 +4,7 @@ import {
   Injectable,
   OnModuleInit,
 } from '@nestjs/common';
-import { Languages, PrismaClient, User, UserSettings } from '@prisma/client';
+import { AccountVisibility, Languages, PrismaClient, User, UserSettings } from '@prisma/client';
 
 @Injectable()
 export class UserSettingsService extends PrismaClient implements OnModuleInit {
@@ -29,14 +29,37 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
   async setUserLanguage(
       user: User, 
       language: Languages
-  ): Promise<UserSettings | null> {
-      return null;
+  ) {
+      try {
+          const userSettings = await this.userSettings.updateMany({
+              where: {
+                  userId: user.id
+              },
+              data: {
+                  language: language
+              }
+          });
+
+          return userSettings;
+      } catch (NotFoundError) {
+          throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+      }
   }
 
-  async setUserVisibility(
-      user: User, 
-      visibility: string
-  ): Promise<UserSettings | null> {
-    return null;
+  async setUserVisibility(user: User, visibility: AccountVisibility) {
+      try {
+          const userSettings = await this.userSettings.updateMany({
+              where: {
+                  userId: user.id
+              },
+              data: {
+                  visibility: visibility 
+              }
+          });
+
+          return userSettings;
+      } catch (NotFoundError) {
+          throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+      }
   }
 }
