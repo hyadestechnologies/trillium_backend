@@ -31,7 +31,7 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
       language: Languages
   ) {
       try {
-          const userSettings = await this.userSettings.updateMany({
+          await this.userSettings.updateMany({
               where: {
                   userId: user.id
               },
@@ -39,16 +39,20 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
                   language: language
               }
           });
-
-          return userSettings;
-      } catch (NotFoundError) {
-          throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+            
+          return await this.userSettings.findUniqueOrThrow({
+              where: {
+                  userId: user.id
+              }
+          });
+      } catch (exp) {
+          throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }
 
   async setUserVisibility(user: User, visibility: AccountVisibility) {
       try {
-          const userSettings = await this.userSettings.updateMany({
+          await this.userSettings.updateMany({
               where: {
                   userId: user.id
               },
@@ -57,9 +61,13 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
               }
           });
 
-          return userSettings;
-      } catch (NotFoundError) {
-          throw new HttpException('User not found!', HttpStatus.NOT_FOUND);
+          return await this.userSettings.findUniqueOrThrow({
+              where: {
+                  userId: user.id
+              }
+          });
+      } catch (exp) {
+          throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
       }
   }
 }

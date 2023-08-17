@@ -22,11 +22,15 @@ export class UserSettingsController {
         @Request() req: any, 
         @Param('visibility') visibility: AccountVisibility
     ) {
+        return this.settingsService.setUserVisibility(req.user, visibility);
     }
 
     @UseGuards(JwtAuthGuard)
     @Put('language/:language')
-    async setLanguage(@Request() req: any, @Param('id') language: Languages) {
+    async setLanguage(
+        @Request() req: any, 
+        @Param('language') language: Languages
+    ) {
         return this.settingsService.setUserLanguage(req.user, language);
     }
 
