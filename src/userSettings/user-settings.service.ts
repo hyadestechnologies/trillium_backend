@@ -11,6 +11,7 @@ import {
   User,
   UserSettings,
 } from '@prisma/client';
+import { UserSettingsModule } from './user-settings.module';
 
 @Injectable()
 export class UserSettingsService extends PrismaClient implements OnModuleInit {
@@ -74,7 +75,7 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  async getAvatar(seed: string)  {
+  async getAvatar(seed: string) {
     const dicebear = await import('@dicebear/core');
     const collection = await import('@dicebear/collection');
 
@@ -85,5 +86,26 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
       seed: seed,
     });
     return avatar;
+  }
+
+  async setAvatar(user: User, seed: string) {
+    try {
+      await this.userSettings.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          avatar: seed,
+        },
+      });
+
+      return await this.userSettings.findUniqueOrThrow({
+        where: {
+          userId: user.id,
+        },
+      });
+    } catch (err) {
+      throw new HttpException(err + '', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

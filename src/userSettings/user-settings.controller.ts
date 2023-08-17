@@ -42,8 +42,13 @@ export class UserSettingsController {
   @Public()
   @Get('avatar/:seed')
   async getAvatar(@Request() req: any, @Param('seed') seed: string) {
-    console.log(seed);
     const avatar = await this.settingsService.getAvatar(seed);
     return avatar.toString();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('avatar/:seed')
+  async setAvatar(@Request() req: any, @Param('seed') seed: string) {
+    return this.settingsService.setAvatar(req.user, seed);
   }
 }
