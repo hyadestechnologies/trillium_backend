@@ -73,4 +73,17 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
       throw new HttpException(exp + '', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  async getAvatar(seed: string)  {
+    const dicebear = await import('@dicebear/core');
+    const collection = await import('@dicebear/collection');
+
+    const createAvatar = dicebear.createAvatar;
+    const micah = collection.micah;
+
+    const avatar = createAvatar(micah, {
+      seed: seed,
+    });
+    return avatar;
+  }
 }
