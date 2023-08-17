@@ -18,10 +18,10 @@ export class AuthController {
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
-
+    
   @Public()
   @Post('signup')
   async signup(@Request() req) {
-    return await this.authService.signup(req.body);
+      return await this.authService.signup(req.body);
   }
 }

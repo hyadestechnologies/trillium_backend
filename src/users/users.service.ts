@@ -5,7 +5,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 
-import { User, PrismaClient, FriendRequest } from '@prisma/client';
+import { User, PrismaClient, FriendRequest, AccountVisibility, Languages } from '@prisma/client';
 import { signupUserType, userInfoType } from 'src/types/types';
 
 @Injectable()
@@ -41,6 +41,12 @@ export class UsersService extends PrismaClient implements OnModuleInit {
         password: user.password,
         name: user.name,
         surname: user.surname,
+        settings: {
+            create: {
+                language: Languages.IT,
+                visibility: AccountVisibility.public
+            }
+        }
       },
     });
 
