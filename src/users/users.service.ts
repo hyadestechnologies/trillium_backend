@@ -215,7 +215,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     const friendsList = oldFriendsList.concat([friendId]);
 
     try {
-      const updated = await this.user.update({
+      await this.user.update({
         where: {
           id: user.id,
         },
@@ -231,7 +231,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     return true;
   }
 
-  async updateProfile(user, newUserInfo: userInfoType) {
+  async updateProfile(userId: string, newUserInfo: userInfoType) {
     if (!this.validateUserInfo(newUserInfo)) {
       throw new HttpException(
         'Params are missing or not well formed',
@@ -240,15 +240,15 @@ export class UsersService extends PrismaClient implements OnModuleInit {
     }
 
     try {
-      const loggedUser = await this.user.findUniqueOrThrow({
+      await this.user.findUniqueOrThrow({
         where: {
-          id: user.id,
+          id: userId,
         },
       });
 
       const updatedUserInfo = await this.user.update({
         where: {
-          id: user.id,
+          id: userId,
         },
         data: {
           username: newUserInfo.username,

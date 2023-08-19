@@ -86,7 +86,7 @@ describe('UsersService', () => {
             };
 
             const updateProfileResponse = await service.updateProfile(
-                {id: userId}, 
+                userId, 
                 newUserInfo
             );
 
