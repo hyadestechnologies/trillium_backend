@@ -19,8 +19,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     it('should return true', async () => {
-
-      expect(await appController.healthCheck()).toStrictEqual({status: true});
+      expect(await appController.healthCheck()).toStrictEqual({ status: true });
     });
   });
 });
