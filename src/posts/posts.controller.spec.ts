@@ -1,6 +1,5 @@
 import { signupUserType } from '../types/types';
 import { UsersService } from '../users/users.service';
-import { PostsController } from './posts.controller';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from '../types/posts';
 import { PostVisibility, User } from '@prisma/client';
@@ -46,11 +45,18 @@ describe('PostController', () => {
     visibility: PostVisibility.hidden,
   };
 
+  let post;
   it('should create post', async () => {
-    const newPost = await postService.createNewPost(postData, user);
+    post = await postService.createNewPost(postData, user);
 
-    expect(newPost.title).toBe(postData.title);
-    expect(newPost.description).toBe(postData.description);
-    expect(newPost.visibility).toBe(postData.visibility);
+    expect(post.title).toBe(postData.title);
+    expect(post.description).toBe(postData.description);
+    expect(post.visibility).toBe(postData.visibility);
+  });
+
+  it('should delete created post', async () => {
+    const deletedPost = await postService.deletePost(post.id, user);
+
+    expect(deletedPost.count).toBe(1);
   });
 });
