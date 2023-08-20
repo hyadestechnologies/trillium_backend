@@ -1,16 +1,11 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { Public } from '../decorators/public-decorator';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
-
-  @Get('ciao')
-  getAuth(): string {
-    return 'ciao';
-  }
+  constructor(private readonly authService: AuthService) {  }
 
   @Public()
   @UseGuards(LocalAuthGuard)

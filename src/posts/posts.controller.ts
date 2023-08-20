@@ -11,11 +11,11 @@ import {
   Request,
 } from '@nestjs/common/decorators';
 
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 import { PostsService } from './posts.service';
 import { CreatePostDto, SearchPostParamsDto } from '../types/posts';
-import { Public, Optional } from 'src/decorators/public-decorator';
+import { Public, Optional } from '../decorators/public-decorator';
 
 @Controller({ path: 'posts', version: '1' })
 export class PostsController {
