@@ -11,7 +11,6 @@ import {
   User,
   UserSettings,
 } from '@prisma/client';
-import { UserSettingsModule } from './user-settings.module';
 
 @Injectable()
 export class UserSettingsService extends PrismaClient implements OnModuleInit {

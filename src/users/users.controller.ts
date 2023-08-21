@@ -9,8 +9,9 @@ import {
   Body,
   HttpCode,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Public } from 'src/decorators/public-decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Public } from '../decorators/public-decorator';
+import { userInfoType } from '../types/types';
 import { UsersService } from './users.service';
 
 @Controller({ path: 'users', version: '1' })
@@ -50,7 +51,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Put('profile/update')
-  updateProfile(@Request() req, @Body() userProfileInfo) {
-    return this.userService.updateProfile(req.user, userProfileInfo);
+  updateProfile(@Request() req, @Body() userProfileInfo: userInfoType) {
+    return this.userService.updateProfile(req.user.id, userProfileInfo);
   }
 }

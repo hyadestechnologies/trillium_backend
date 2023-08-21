@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import { signupUserType } from 'src/types/types';
+import { signupUserType } from '../types/types';
 import { User, PrismaClient } from '@prisma/client';
 
 @Injectable()

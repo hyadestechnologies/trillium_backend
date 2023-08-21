@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import {UserSettingsModule} from './userSettings/user-settings.module';
+import { UserSettingsModule } from './userSettings/user-settings.module';
 
 @Module({
   imports: [PostsModule, AuthModule, UsersModule, UserSettingsModule],
