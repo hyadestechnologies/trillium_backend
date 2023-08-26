@@ -27,7 +27,7 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  public async getAllPosts(page: number, size: number, user) {
+  public async getAllPosts(page: number, size: number, user:User) {
     if (isNaN(page) || isNaN(size)) {
       throw new HttpException(
         'Page or size are not valid',
@@ -36,14 +36,17 @@ export class PostsService extends PrismaClient implements OnModuleInit {
     }
 
     try {
-      const loggedUser = await this.user.findUnique({
-        where: {
-          id: user.id,
-        },
-      });
+      let userFriends: string[] = [];
+      if (user) {
+        const loggedUser = await this.user.findUnique({
+          where: {
+            id: user.id,
+          },
+        });
 
-      const userFriends = loggedUser ? loggedUser.friends : [];
-
+        userFriends = !loggedUser ? [] : loggedUser.friends;
+      }
+      
       const posts = await this.post.findMany({
         skip: page * size,
         take: size,
