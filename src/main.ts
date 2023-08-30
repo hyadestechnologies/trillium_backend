@@ -7,17 +7,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const port = Number(process.env.PORT);
 
-  const enabledOrigins = [
-    'https://trillium-app.vercel.app',
-    'http://localhost:8000',
-  ];
-
-  app.enableCors({
-    origin: enabledOrigins,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  });
   app.enableVersioning({
     type: VersioningType.URI,
   });
