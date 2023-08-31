@@ -8,7 +8,7 @@ async function bootstrap() {
   const port = Number(process.env.PORT);
 
   app.enableCors({
-    origin: '*',
+    origin: ['https://trillium-app.vercel.app/', 'http://localhost:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
     optionsSuccessStatus: 204,
