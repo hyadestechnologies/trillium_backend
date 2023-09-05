@@ -74,7 +74,7 @@ export class UserSettingsService extends PrismaClient implements OnModuleInit {
     }
   }
 
-  async getAvatar(seed: string) {
+  async getAvatar(seed: string): Promise<any> {
     const dicebear = await import('@dicebear/core');
     const collection = await import('@dicebear/collection');
 

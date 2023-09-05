@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "lib": ["esnext"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "moduleResolution": "node16"
   }
 }
